@@ -89,8 +89,8 @@ trimmed <- trimmed %>% mutate(question_type =
     question %in% q_list$green ~ "green",
     question %in% q_list$purple ~ "purple",
     question %in% q_list$grey ~ "grey",
-    question %in% q_list$dark_blue ~ "dark blue",
-    question %in% q_list$sky_blue ~ "sky blue",
+    question %in% q_list$dark_blue ~ "dark_blue",
+    question %in% q_list$sky_blue ~ "sky_blue",
     question %in% q_list$black ~ "black",
     TRUE ~ as.character(question)
   )
@@ -99,6 +99,71 @@ trimmed <- trimmed %>% mutate(question_type =
 
 ```
 
+```{r data_vis}
+# MODEL TO BASE FUNCTION OF OFF MORE OR LESS
+# trimmed %>% 
+#   filter(classroom == trimmed$classroom[1]) %>% 
+#   filter(question_type == "red") %>% 
+#   mutate(question = 
+#            str_replace_all(question, "_", " ")) %>% 
+#   ggplot(aes(x = question, y = performance, fill = visit_number)) + 
+#   geom_col(position = "dodge") +
+#   scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) + 
+#   scale_fill_discrete(guide = guide_legend("dkdkd"))
+#   
+# 
+# 
+# 
+
+
+# THIS FUNCTION ALLOWS TO PLOT A SINGLE PLOT BY FEEDING IN THE CLASSROOM AND QUESTION TYPE AS STRINGS.
+
+data_vis <- function(df, classroom, question_type) {
+  class <- enquo(classroom)
+  type <- enquo(question_type)
+  
+  df %>% 
+    filter(classroom == !! class) %>% 
+    filter(question_type == !! type) %>% 
+    mutate(question = 
+             str_replace_all(question, "_", " ")) %>% 
+    ggplot(aes(x = question, y = performance, fill = visit_number)) + 
+    geom_col(position = "dodge") +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
+    scale_fill_discrete(palette = viridis, guide = guide_legend("Visit Number", )) +
+    labs(title = classroom,
+         subtitle = str_to_upper(question_type),
+         x = paste0(str_to_title(question_type), " Question"),
+         y = "Performance") 
+  
+}
+    
+q_colors <- names(q_list)
+
+data_vis_loop <- function(x, y) {
+  for (i in q_colors) {
+  plot <- data_vis(x, y, i)
+  print(plot)
+  }
+}
+
+# OTHER THAN THE DATA SET, ALL YOU NEED TO DO IS PUT IN THE STRING FOR THE CLASSROOM
+data_vis_loop(trimmed, "Canyonside Christian School -- Allison Cole")
+
+
+# data_vis_loop_all <- function(df) {
+#   x <- 0
+#   while (x < 3) {
+#     for (i in unique(df$classroom)) {
+#     data_vis_loop(df, i)
+#     x <- x + 1
+#     }
+#   }
+# }
+# 
+# data_vis_loop_all(trimmed)
+
+```
 
 
 
