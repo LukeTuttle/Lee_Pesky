@@ -11,22 +11,22 @@ library(siverse)
 library(tidyverse)
 ```
 
-```{r read_in_data}
+```{r read_in_data, include = FALSE}
 og_df <- read_excel("PreK_Implementation_Checklists.xlsx", sheet = "Form1") %>% 
   clean_names()
 ```
 
-```{r create_question_groupings}
+```{r create_question_groupings, include = FALSE}
 
-q_list <- list(red = colnames(og_df)[9:16],
-               orange = colnames(og_df)[27:33],
-               yellow = colnames(og_df)[34:42],
-               green = colnames(og_df)[43:50],
-               purple = colnames(og_df)[c(51:58, 61:62)],
-               grey = colnames((og_df)[69:72]),
-               dark_blue = colnames((og_df)[74:77]),
-               sky_blue = colnames((og_df)[79:82]),
-               black = colnames((og_df)[84:87])
+q_list <- list("Alphabet Routines"  = colnames(og_df)[9:16],
+               "Environmental Print Routines -- Name Recognition" = colnames(og_df)[27:33],
+               "Environmental Print Routines -- Environmental Print" = colnames(og_df)[34:42],
+               "Phonological Awareness Routines" = colnames(og_df)[c(43:50, 59:60)],
+               "Language and Vocabulary: Read Aloud Routines" = colnames(og_df)[c(51:58, 61:62)],
+               "Positive Climate" = colnames((og_df)[69:72]),
+               "Behavior Management" = colnames((og_df)[74:77]),
+               "Productivity" = colnames((og_df)[79:82]),
+               "Language Modeling (REN)" = colnames((og_df)[84:87])
                )
 
 #I have placed bleow a list of columns that we are interested in looking at just in case the column locations change and the above position-based code becomes unuseful. I used: str_c(unlist(q_list, use.names = FALSE), collapse = ", ") 
@@ -37,7 +37,7 @@ q_list <- list(red = colnames(og_df)[9:16],
 ```
 
 
-```{r}
+```{r cleaninng, include = FALSE}
 trimmed <- og_df %>% 
   select(observer, classroom, mj_nampa_classrooms, mj_caldwell_classrooms, mj_west_bonner_classrooms, t_classrooms, unlist(q_list, use.names = FALSE), visit_number)
 #Among all the columns containing  "classroom" there should only be one value per line, line 3 however has a value in 2 columns therefore I'm deleting one of the values prior to unite()'ing the columns into one. I think Glenda's day care belongs to the line above with Lori but Wissam wants me to leave it blank to illustrate a point about being careful with handling data to the client. 
@@ -83,15 +83,15 @@ trimmed <- gather(trimmed, "question", "performance", 4:61)
 # create a question type variable in order to use when doing data vis
 trimmed <- trimmed %>% mutate(question_type = 
   case_when(
-    question %in% q_list$red ~ "red",
-    question %in% q_list$orange ~ "orange",
-    question %in% q_list$yellow ~ "yellow",
-    question %in% q_list$green ~ "green",
-    question %in% q_list$purple ~ "purple",
-    question %in% q_list$grey ~ "grey",
-    question %in% q_list$dark_blue ~ "dark_blue",
-    question %in% q_list$sky_blue ~ "sky_blue",
-    question %in% q_list$black ~ "black",
+    question %in% q_list$`Alphabet Routines` ~ "Alphabet Routines",
+    question %in% q_list$`Environmental Print Routines -- Name Recognition` ~ "Environmental Print Routines -- Name Recognition",
+    question %in% q_list$`Environmental Print Routines -- Environmental Print` ~ "Environmental Print Routines -- Environmental Print",
+    question %in% q_list$`Phonological Awareness Routines` ~ "Phonological Awareness Routines",
+    question %in% q_list$`Language and Vocabulary: Read Aloud Routines` ~ "Language and Vocabulary: Read Aloud Routines",
+    question %in% q_list$`Positive Climate` ~ "Positive Climate",
+    question %in% q_list$`Behavior Management` ~ "Behavior Management",
+    question %in% q_list$Productivity ~ "Productivity",
+    question %in% q_list$`Language Modeling (REN)` ~ "Language Modeling (REN",
     TRUE ~ as.character(question)
   )
 ) %>% 
@@ -99,7 +99,7 @@ trimmed <- trimmed %>% mutate(question_type =
 
 ```
 
-```{r data_vis}
+```{r data_vis_func, include = FALSE, echo = FALSE, warning= FALSE}
 # MODEL TO BASE FUNCTION OF OFF MORE OR LESS
 # trimmed %>% 
 #   filter(classroom == trimmed$classroom[1]) %>% 
@@ -130,7 +130,7 @@ data_vis <- function(df, classroom, question_type) {
     ggplot(aes(x = question, y = performance, fill = visit_number)) + 
     geom_col(position = "dodge") +
     scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
-    scale_fill_discrete(palette = viridis, guide = guide_legend("Visit Number", )) +
+    scale_fill_discrete(palette = viridis, guide = guide_legend("Visit Number")) +
     labs(title = classroom,
          subtitle = str_to_upper(question_type),
          x = paste0(str_to_title(question_type), " Question"),
@@ -151,19 +151,19 @@ data_vis_loop <- function(x, y) {
 data_vis_loop(trimmed, "Canyonside Christian School -- Allison Cole")
 
 
-# data_vis_loop_all <- function(df) {
-#   x <- 0
-#   while (x < 3) {
-#     for (i in unique(df$classroom)) {
-#     data_vis_loop(df, i)
-#     x <- x + 1
-#     }
-#   }
-# }
-# 
-# data_vis_loop_all(trimmed)
+data_vis_loop_all <- function(df, x) {
+    for (i in x) {
+    data_vis_loop(df, i)
+    }
+  }
+
+
 
 ```
 
+
+```{r echo=FALSE}
+data_vis_loop_all(trimmed, unique(trimmed$classroom)[1:68])
+```
 
 
