@@ -78,7 +78,7 @@ trimmed <- trimmed %>%
 #considered seperating classroom column into school and teacher but most schools only have a one teacher
 
 # make data long
-trimmed <- gather(trimmed, "question", "performance", 4:61)
+trimmed <- gather(trimmed, "question", "performance", 4:63)
 
 # create a question type variable in order to use when doing data vis
 trimmed <- trimmed %>% mutate(question_type = 
@@ -91,7 +91,7 @@ trimmed <- trimmed %>% mutate(question_type =
     question %in% q_list$`Positive Climate` ~ "Positive Climate",
     question %in% q_list$`Behavior Management` ~ "Behavior Management",
     question %in% q_list$Productivity ~ "Productivity",
-    question %in% q_list$`Language Modeling (REN)` ~ "Language Modeling (REN",
+    question %in% q_list$`Language Modeling (REN)` ~ "Language Modeling (REN)",
     TRUE ~ as.character(question)
   )
 ) %>% 
