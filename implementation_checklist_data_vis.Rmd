@@ -148,7 +148,7 @@ data_vis_loop <- function(x, y) {
 }
 
 # OTHER THAN THE DATA SET, ALL YOU NEED TO DO IS PUT IN THE STRING FOR THE CLASSROOM
-data_vis_loop(trimmed, "Canyonside Christian School -- Allison Cole")
+data_vis_loop(trimmed, "Canyonside Christian School -- Allison Cole") # Example
 
 
 data_vis_loop_all <- function(df, x) {
@@ -163,7 +163,7 @@ data_vis_loop_all <- function(df, x) {
 
 
 ```{r echo=FALSE}
-data_vis_loop_all(trimmed, unique(trimmed$classroom)[1:68])
+data_vis_loop_all(trimmed, unique(trimmed$classroom)[1:68]) #I use 1:68 because I was suspiscious it was taking so long to finish if I didnt subset the data even though the lenght is indeed 68. 
 ```
 
 
