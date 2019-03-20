@@ -1,10 +1,12 @@
 ---
 title: "Lee Pesky Learning Center Data Visualization"
-author: "Luke Tuttle"
-date: "2/22/2019"
-output: html_document
+author: "Sorenson Impact Center"
+date: "3/20/2019"
+output: 
+  html_document
 ---
 
+Hint: Use ctrl+f to search for a given teacher. 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(siverse)
@@ -141,10 +143,12 @@ data_vis <- function(df, classroom, question_type) {
 q_colors <- names(q_list)
 
 data_vis_loop <- function(x, y) {
+  writeLines(y, sep = "\n\n\n")
   for (i in q_colors) {
   plot <- data_vis(x, y, i)
   print(plot)
   }
+  writeLines(c("\n", "\n", "\n"))
 }
 
 # OTHER THAN THE DATA SET, ALL YOU NEED TO DO IS PUT IN THE STRING FOR THE CLASSROOM
@@ -162,8 +166,10 @@ data_vis_loop_all <- function(df, x) {
 ```
 
 
-```{r echo=FALSE}
-data_vis_loop_all(trimmed, unique(trimmed$classroom)[1:68]) #I use 1:68 because I was suspiscious it was taking so long to finish if I didnt subset the data even though the lenght is indeed 68. 
+```{r echo=FALSE, results = "asis", fig.width= 7, out.width= "80%"}
+
+
+data_vis_loop_all(trimmed, unique(trimmed$classroom)[1:68]) #I use 1:68 because I was suspiscious it was taking so long to finish if I didnt subset the data even though the length is indeed 68. 
 ```
 
 
