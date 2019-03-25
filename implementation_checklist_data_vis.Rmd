@@ -41,7 +41,7 @@ q_list <- list("Alphabet Routines"  = colnames(og_df)[9:16],
 
 ```{r cleaninng, include = FALSE}
 trimmed <- og_df %>% 
-  select(observer, classroom, mj_nampa_classrooms, mj_caldwell_classrooms, mj_west_bonner_classrooms, t_classrooms, unlist(q_list, use.names = FALSE), visit_number)
+  select(observer, classroom, mj_nampa_classrooms, mj_caldwell_classrooms, mj_west_bonner_classrooms, t_classrooms, unlist(q_list, use.names = FALSE), visit_number, date_of_visit)
 #Among all the columns containing  "classroom" there should only be one value per line, line 3 however has a value in 2 columns therefore I'm deleting one of the values prior to unite()'ing the columns into one. I think Glenda's day care belongs to the line above with Lori but Wissam wants me to leave it blank to illustrate a point about being careful with handling data to the client. 
 trimmed[3,2] <- NA
 trimmed[2,2] <- "Missing Teacher"
@@ -62,7 +62,8 @@ trimmed <- trimmed %>% select(observer, classroom, visit_number, everything())
 
 # convert all NAs and empty strings to "0" and make values uniform
 trimmed <- trimmed %>% 
-  mutate_all(.funs = funs(
+  mutate_at(.vars = vars(-date_of_visit),
+            .funs = funs(
     case_when(
       is.na(.) ~ "0",
       . == "" ~ "0",
@@ -99,7 +100,22 @@ trimmed <- trimmed %>% mutate(question_type =
 ) %>% 
   arrange(classroom, observer, visit_number, question_type)
 
+# take out underscores in questions
+trimmed <- trimmed %>% 
+   mutate(question = str_replace_all(question, "_", " "))
+
+
+
+
+
+
 ```
+
+```{r save_to_rds}
+saveRDS(trimmed, file = "Lee_Pesky_Dashboard/prek_fid_checklist_cleaned.rds")
+```
+
+
 
 ```{r data_vis_func, include = FALSE, echo = FALSE, warning= FALSE}
 # MODEL TO BASE FUNCTION OF OFF MORE OR LESS
@@ -140,11 +156,11 @@ data_vis <- function(df, classroom, question_type) {
   
 }
     
-q_colors <- names(q_list)
+q_list_names <- names(q_list)
 
 data_vis_loop <- function(x, y) {
   writeLines(y, sep = "\n\n\n")
-  for (i in q_colors) {
+  for (i in q_list_names) {
   plot <- data_vis(x, y, i)
   print(plot)
   }
