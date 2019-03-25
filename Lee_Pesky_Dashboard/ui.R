@@ -22,19 +22,19 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
     selectInput("dataset", "Dataset:", 
                 list("Pre-K" = "Pre-K")
-                ),
+    ),
     selectInput("classroom", "Classroom:",
                 #create a named list of teacher classrooms
-                set_names(unique(prek_df$classroom))
-                ),
+                unique(prek_df$classroom)
+                
+    ),
     selectInput("question_type", "Question Type:",
-                set_names(unique(prek_df$question_type))
-                )
+                c("All", unique(prek_df$question_type))
+    )
   ),
-  
-  mainPanel(
-   # plotOutput("classroom_plot"),
-    plotOutput("classroom_plots")
-    #tableOutput("table")
-  )
-))
+    mainPanel(
+     # plotOutput("classroom_plots"),
+     # tableOutput("table"),
+      plotOutput("test_plot")
+    )
+  ))
