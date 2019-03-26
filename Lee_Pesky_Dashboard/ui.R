@@ -12,7 +12,9 @@ library(siverse)
 library(tidyverse)
 library(purrr)
 prek_df <- readRDS("~/Github/Lee_Pesky/Lee_Pesky_Dashboard/prek_fid_checklist_cleaned.Rds")
+
 q_list <- unique(prek_df$question_type)
+
 # Define UI for Pre-k fidelity checklist app
 shinyUI(pageWithSidebar(
   
@@ -36,7 +38,7 @@ shinyUI(pageWithSidebar(
     # tableOutput("table"),
     # plotOutput("test_plot"),
     # UI output
-    map(q_list[1:3], function(.x) {
+    map(q_list[c(1:4, 6:9)], function(.x) {
       plotOutput(paste0(.x))
     })
   )

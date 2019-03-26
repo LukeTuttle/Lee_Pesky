@@ -1,17 +1,12 @@
-#
-# This is the server logic of a Shiny web application. You can run the 
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
 
 library(shiny)
 library(siverse)
 library(tidyverse)
 library(purrr)
 library(gridExtra)
+# PROBLEMS: code breaks if try to include the plot for Language and Vocabulary: Read Aloud Routines; 
+# cant get consistent ordering of dodged columns in the plots, the lowest y value column shows up first
+
 
 prek_df <- readRDS("~/Github/Lee_Pesky/Lee_Pesky_Dashboard/prek_fid_checklist_cleaned.Rds")
 # kinder_df <- readRDS("place_holder")
@@ -173,14 +168,14 @@ df <- reactive({
 
 
 
-map(.x = q_list_names[1:3], .f = function(.x) {
+map(.x = q_list_names[c(1:4, 6:9)], .f = function(.x) {
   output[[paste0(.x)]] <- renderPlot({
     df2 <- df()
     x <- enquo(.x)
     df2 %>% 
       filter(question_type == !! x) %>% 
       ggplot(aes(x = question, y = performance,  fill = as.factor(date_of_visit))) + 
-      geom_col(position = "dodge") +
+      geom_col(position = "dodge2") +
       scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
       scale_fill_discrete(palette = viridis, guide = guide_legend("Visit Date")) +
       labs(title = NULL,
