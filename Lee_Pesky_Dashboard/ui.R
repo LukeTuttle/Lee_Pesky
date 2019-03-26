@@ -9,10 +9,10 @@
 
 library(shiny)
 library(siverse)
+library(tidyverse)
 library(purrr)
-prek_df <- readRDS("prek_fid_checklist_cleaned.Rds")
-
-
+prek_df <- readRDS("~/Github/Lee_Pesky/Lee_Pesky_Dashboard/prek_fid_checklist_cleaned.Rds")
+q_list <- unique(prek_df$question_type)
 # Define UI for Pre-k fidelity checklist app
 shinyUI(pageWithSidebar(
   
@@ -24,17 +24,21 @@ shinyUI(pageWithSidebar(
                 list("Pre-K" = "Pre-K")
     ),
     selectInput("classroom", "Classroom:",
-                #create a named list of teacher classrooms
+                #create a vector teacher classrooms
                 unique(prek_df$classroom)
-                
-    ),
-    selectInput("question_type", "Question Type:",
-                c("All", unique(prek_df$question_type))
     )
+    # selectInput("question_type", "Question Type:",
+    #             c("All", unique(prek_df$question_type))
+    # )
   ),
-    mainPanel(
-     # plotOutput("classroom_plots"),
-     # tableOutput("table"),
-      plotOutput("test_plot")
-    )
-  ))
+  mainPanel(
+    # plotOutput("classroom_plots"),
+    # tableOutput("table"),
+    # plotOutput("test_plot"),
+    # UI output
+    map(q_list[1:3], function(.x) {
+      plotOutput(paste0(.x))
+    })
+  )
+)
+)
