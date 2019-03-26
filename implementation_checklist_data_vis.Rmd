@@ -90,7 +90,7 @@ trimmed <- trimmed %>% mutate(question_type =
     question %in% q_list$`Environmental Print Routines -- Name Recognition` ~ "Environmental Print Routines -- Name Recognition",
     question %in% q_list$`Environmental Print Routines -- Environmental Print` ~ "Environmental Print Routines -- Environmental Print",
     question %in% q_list$`Phonological Awareness Routines` ~ "Phonological Awareness Routines",
-    question %in% q_list$`Language and Vocabulary: Read Aloud Routines` ~ "Language and Vocabulary: Read Aloud Routines",
+    question %in% q_list$`Language and Vocabulary: Read Aloud Routines` ~ "Language and Vocabulary -- Read Aloud Routines",
     question %in% q_list$`Positive Climate` ~ "Positive Climate",
     question %in% q_list$`Behavior Management` ~ "Behavior Management",
     question %in% q_list$Productivity ~ "Productivity",
@@ -145,10 +145,10 @@ data_vis <- function(df, classroom, question_type) {
     filter(question_type == !! type) %>% 
     mutate(question = 
              str_replace_all(question, "_", " ")) %>% 
-    ggplot(aes(x = question, y = performance, fill = visit_number)) + 
+    ggplot(aes(x = question, y = performance, group = as.factor(date_of_visit), fill = as.factor(date_of_visit)) + 
     geom_col(position = "dodge") +
     scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
-    scale_fill_discrete(palette = viridis, guide = guide_legend("Visit Number")) +
+    scale_fill_discrete(palette = viridis, guide = guide_legend("Date Of Visit")) +
     labs(title = classroom,
          subtitle = str_to_upper(question_type),
          x = paste0(str_to_title(question_type), " Question"),
@@ -183,7 +183,6 @@ data_vis_loop_all <- function(df, x) {
 
 
 ```{r echo=FALSE, results = "asis", fig.width= 7, out.width= "80%"}
-
 
 data_vis_loop_all(trimmed, unique(trimmed$classroom)[1:68]) #I use 1:68 because I was suspiscious it was taking so long to finish if I didnt subset the data even though the length is indeed 68. 
 ```

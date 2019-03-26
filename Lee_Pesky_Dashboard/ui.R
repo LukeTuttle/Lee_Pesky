@@ -29,16 +29,11 @@ shinyUI(pageWithSidebar(
                 #create a vector teacher classrooms
                 unique(prek_df$classroom)
     )
-    # selectInput("question_type", "Question Type:",
-    #             c("All", unique(prek_df$question_type))
-    # )
   ),
   mainPanel(
-    # plotOutput("classroom_plots"),
-    # tableOutput("table"),
-    # plotOutput("test_plot"),
+    
     # UI output
-    map(q_list[c(1:4, 6:9)], function(.x) {
+    map(q_list, function(.x) {
       plotOutput(paste0(.x))
     })
   )
