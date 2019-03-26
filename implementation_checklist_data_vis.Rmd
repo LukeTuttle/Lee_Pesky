@@ -41,7 +41,7 @@ q_list <- list("Alphabet Routines"  = colnames(og_df)[9:16],
 
 ```{r cleaninng, include = FALSE}
 trimmed <- og_df %>% 
-  select(observer, classroom, mj_nampa_classrooms, mj_caldwell_classrooms, mj_west_bonner_classrooms, t_classrooms, unlist(q_list, use.names = FALSE), visit_number)
+  select(observer, classroom, mj_nampa_classrooms, mj_caldwell_classrooms, mj_west_bonner_classrooms, t_classrooms, unlist(q_list, use.names = FALSE), visit_number, date_of_visit)
 #Among all the columns containing  "classroom" there should only be one value per line, line 3 however has a value in 2 columns therefore I'm deleting one of the values prior to unite()'ing the columns into one. I think Glenda's day care belongs to the line above with Lori but Wissam wants me to leave it blank to illustrate a point about being careful with handling data to the client. 
 trimmed[3,2] <- NA
 trimmed[2,2] <- "Missing Teacher"
@@ -62,7 +62,8 @@ trimmed <- trimmed %>% select(observer, classroom, visit_number, everything())
 
 # convert all NAs and empty strings to "0" and make values uniform
 trimmed <- trimmed %>% 
-  mutate_all(.funs = funs(
+  mutate_at(.vars = vars(-date_of_visit),
+            .funs = funs(
     case_when(
       is.na(.) ~ "0",
       . == "" ~ "0",
@@ -89,7 +90,7 @@ trimmed <- trimmed %>% mutate(question_type =
     question %in% q_list$`Environmental Print Routines -- Name Recognition` ~ "Environmental Print Routines -- Name Recognition",
     question %in% q_list$`Environmental Print Routines -- Environmental Print` ~ "Environmental Print Routines -- Environmental Print",
     question %in% q_list$`Phonological Awareness Routines` ~ "Phonological Awareness Routines",
-    question %in% q_list$`Language and Vocabulary: Read Aloud Routines` ~ "Language and Vocabulary: Read Aloud Routines",
+    question %in% q_list$`Language and Vocabulary: Read Aloud Routines` ~ "Language and Vocabulary -- Read Aloud Routines",
     question %in% q_list$`Positive Climate` ~ "Positive Climate",
     question %in% q_list$`Behavior Management` ~ "Behavior Management",
     question %in% q_list$Productivity ~ "Productivity",
@@ -99,7 +100,22 @@ trimmed <- trimmed %>% mutate(question_type =
 ) %>% 
   arrange(classroom, observer, visit_number, question_type)
 
+# take out underscores in questions
+trimmed <- trimmed %>% 
+   mutate(question = str_replace_all(question, "_", " "))
+
+
+
+
+
+
 ```
+
+```{r save_to_rds}
+saveRDS(trimmed, file = "Lee_Pesky_Dashboard/prek_fid_checklist_cleaned.rds")
+```
+
+
 
 ```{r data_vis_func, include = FALSE, echo = FALSE, warning= FALSE}
 # MODEL TO BASE FUNCTION OF OFF MORE OR LESS
@@ -129,10 +145,10 @@ data_vis <- function(df, classroom, question_type) {
     filter(question_type == !! type) %>% 
     mutate(question = 
              str_replace_all(question, "_", " ")) %>% 
-    ggplot(aes(x = question, y = performance, fill = visit_number)) + 
+    ggplot(aes(x = question, y = performance, group = as.factor(date_of_visit), fill = as.factor(date_of_visit)) + 
     geom_col(position = "dodge") +
     scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
-    scale_fill_discrete(palette = viridis, guide = guide_legend("Visit Number")) +
+    scale_fill_discrete(palette = viridis, guide = guide_legend("Date Of Visit")) +
     labs(title = classroom,
          subtitle = str_to_upper(question_type),
          x = paste0(str_to_title(question_type), " Question"),
@@ -140,11 +156,11 @@ data_vis <- function(df, classroom, question_type) {
   
 }
     
-q_colors <- names(q_list)
+q_list_names <- names(q_list)
 
 data_vis_loop <- function(x, y) {
   writeLines(y, sep = "\n\n\n")
-  for (i in q_colors) {
+  for (i in q_list_names) {
   plot <- data_vis(x, y, i)
   print(plot)
   }
@@ -167,7 +183,6 @@ data_vis_loop_all <- function(df, x) {
 
 
 ```{r echo=FALSE, results = "asis", fig.width= 7, out.width= "80%"}
-
 
 data_vis_loop_all(trimmed, unique(trimmed$classroom)[1:68]) #I use 1:68 because I was suspiscious it was taking so long to finish if I didnt subset the data even though the length is indeed 68. 
 ```
