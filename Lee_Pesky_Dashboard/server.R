@@ -3,7 +3,6 @@ library(shiny)
 library(siverse)
 library(tidyverse)
 library(purrr)
-library(gridExtra)
 # PROBLEMS: code breaks if try to include the plot for Language and Vocabulary: Read Aloud Routines; 
 # cant get consistent ordering of dodged columns in the plots, the lowest y value column shows up first
 
