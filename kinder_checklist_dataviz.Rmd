@@ -16,6 +16,8 @@ kinder_df <- readRDS("~/Github/Lee_Pesky/Lee_Pesky_Dashboard/kinder_fid_checklis
 
 kinder_df <- kinder_df %>% 
   rename("date_of_visit" = date_of_observation)
+
+kinder_df <- kinder_df %>% filter(classroom != "NA -- NA")
 ```
 
 ```{r include = FALSE}
@@ -66,7 +68,7 @@ data_vis_loop_all <- function(df, x) {
 
 
 ```{r echo=FALSE, results = "asis", fig.width= 7, out.width= "80%"}
- data_vis_loop_all(kinder_df, unique(kinder_df$classroom)[69:130])
+ data_vis_loop_all(kinder_df, unique(kinder_df$classroom))
 ```
 
 
