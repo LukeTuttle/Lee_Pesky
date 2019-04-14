@@ -1,0 +1,72 @@
+---
+title: "Lee Pesky Kindergarten Fidelity Checklist Data Visualization"
+author: "Sorenson Impact Center"
+date: "4/12/2019"
+output: html_document
+---
+
+
+Hint: Use ctrl+f to search for a given teacher. 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(siverse)
+library(tidyverse)
+
+kinder_df <- readRDS("~/Github/Lee_Pesky/Lee_Pesky_Dashboard/kinder_fid_checklist_cleaned.rds")
+
+kinder_df <- kinder_df %>% 
+  rename("date_of_visit" = date_of_observation)
+```
+
+```{r include = FALSE}
+q_list_names <- unique(kinder_df$question_type)
+
+
+# THIS FUNCTION ALLOWS TO PLOT A SINGLE PLOT BY FEEDING IN THE CLASSROOM AND QUESTION TYPE AS STRINGS.
+
+data_vis <- function(df, classroom, question_type) {
+  class <- enquo(classroom)
+  type <- enquo(question_type)
+  
+  df %>% 
+    filter(classroom == !! class) %>% 
+    filter(question_type == !! type) %>% 
+    mutate(question = str_replace_all(question, "_", " ")) %>% 
+    ggplot(aes(x = question, y = performance, group = as.factor(date_of_visit), fill = as.factor(date_of_visit))) + 
+    geom_col(position = "dodge") +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
+    scale_fill_discrete(palette = viridis, guide = guide_legend("Date Of Visit")) +
+    labs(title = classroom,
+         subtitle = str_to_upper(question_type),
+         x = paste0(str_to_title(question_type), " Question"),
+         y = "Performance") 
+}
+    
+
+data_vis_loop <- function(x, y) {
+  writeLines(y, sep = "\n\n\n")
+  for (i in q_list_names) {
+  plot <- data_vis(x, y, i)
+  print(plot)
+  }
+  writeLines(c("\n", "\n", "\n"))
+}
+
+# OTHER THAN THE DATA SET, ALL YOU NEED TO DO IS PUT IN THE STRING FOR THE CLASSROOM
+# data_vis_loop(kinder_df, "Reed -- Breseno") # Example
+
+
+data_vis_loop_all <- function(df, x) {
+    for (i in x) {
+    data_vis_loop(df, i)
+    }
+  }
+
+```
+
+
+```{r echo=FALSE, results = "asis", fig.width= 7, out.width= "80%"}
+ data_vis_loop_all(kinder_df, unique(kinder_df$classroom)[69:130])
+```
+
+
