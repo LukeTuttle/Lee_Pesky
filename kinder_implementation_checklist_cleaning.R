@@ -95,6 +95,7 @@ q_list <- list(
 kinder_df <- og_kinder_df %>% 
   select(teacher_last_name, school, date_of_observation, observation, unlist(q_list, use.names = FALSE)) %>% 
   gather(key = "question", value = "performance", unlist(q_list, use.names = FALSE)) %>% 
+both_data_sets
   unite("classroom", school, teacher_last_name, sep = " -- ") %>%
   mutate(question_type = case_when(
       question %in% q_list$`Daily Language/Opening Routines` ~ "Daily Language/Opening Routines", 
