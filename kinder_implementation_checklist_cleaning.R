@@ -95,21 +95,18 @@ q_list <- list(
 kinder_df <- og_kinder_df %>% 
   select(teacher_last_name, school, date_of_observation, observation, unlist(q_list, use.names = FALSE)) %>% 
   gather(key = "question", value = "performance", unlist(q_list, use.names = FALSE)) %>% 
-  unite("classroom", school, teacher_last_name, sep = " -- ") %>% 
-  mutate(
-    question_type = case_when(
-      question %in% q_list$x1 ~ "x1", 
-      question %in% q_list$x2 ~ "x2", 
-      question %in% q_list$x3 ~ "x3", 
-      question %in% q_list$x4 ~ "x4", 
-      question %in% q_list$x5 ~ "x5", 
-      question %in% q_list$x6 ~ "x6", 
-      question %in% q_list$x7 ~ "x7", 
-      question %in% q_list$x8 ~ "x8", 
-      question %in% q_list$x9 ~ "x9",
-      TRUE ~ identity(question)
+  unite("classroom", school, teacher_last_name, sep = " -- ") %>%
+  mutate(question_type = case_when(
+    question %in% q_list$`Daily Language/Opening Routines` ~ "Daily Language/Opening Routines", 
+    question %in% q_list$`Word Work (phonemic awareness, phonics, and high-frequency words)` ~ "Word Work (phonemic awareness, phonics, and high-frequency words)", 
+    question %in% q_list$`Skills and Strategies (reading, fluency, text-based comprehension)` ~ "Skills and Strategies (reading, fluency, text-based comprehension)", 
+    question %in% q_list$`Small Group/Independent Practice` ~ "Small Group/Independent Practice", 
+    question %in% q_list$`Positive Climate` ~ "Positive Climate", 
+    question %in% q_list$`Behavior Management` ~ "Behavior Management", 
+    question %in% q_list$Productivity ~ "Productivity", 
+    TRUE ~ identity(question)
     )
-  ) 
+  )
 
 #This is to use with ggplot alpha to show that they actually had a reason for not entering the value. 
 kinder_df <- kinder_df %>% 
@@ -144,6 +141,9 @@ kinder_df <- kinder_df %>%
 kinder_df <- kinder_df %>% 
   mutate(question = str_replace_all(question, "_", " "))
 
+# Eliminate NA lines
+kinder_df <- kinder_df %>% 
+  filter(classroom != "NA -- NA")
 
 saveRDS(kinder_df, file = "Lee_Pesky_Dashboard/kinder_fid_checklist_cleaned.rds")
 
