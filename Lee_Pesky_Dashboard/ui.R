@@ -1,12 +1,3 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(siverse)
 library(tidyverse)
@@ -24,23 +15,24 @@ shinyUI(pageWithSidebar(
   
   sidebarPanel(
     selectInput("dataset", "Dataset:", 
-                list("Pre-K" = "Pre-K")
+                list("Kindergarten" = "Kindergarten", 
+                     "Pre-K" = "Pre-K")
     ),
     selectInput("classroom", "Classroom:",
                 #create a vector teacher classrooms
-                unique(prek_df$classroom)
+               NULL
     )
   ),
   mainPanel(
     
     # UI output
     
-    q <- uiOutput("list"),
-   
+    uiOutput("plots")
     
-    map(.x = 1:9, function(.x) {
-      plotOutput(paste0(.x))
-    })
+    
+    # map(.x =  function(.x) {
+    #   plotOutput(paste0(.x))
+    # })
   )
 )
 )
